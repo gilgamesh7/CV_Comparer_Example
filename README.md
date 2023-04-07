@@ -10,7 +10,7 @@ Training exercise using OpenAI API to compare CVs
     - poetry remove
 - on python shell
     - MacOS : export OPENAI_API_KEY=
-    - Powershell :
+    - Powershell : $env:OPENAI_API_KEY=
 
 # Run on VDI
 -  Add PDF CVs to data directory
