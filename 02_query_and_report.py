@@ -39,48 +39,54 @@ def main()-> None:
         sheet = workbook.active
         sheet.title = "CV Comparision Table"
 
+        # create questions list
+        person=""
+        list_of_questions = [
+            
+        ]
+
         # Generate comparison spreadsheet spreadsheet
         for column_number, person in enumerate(list_of_people):
             # Get first answer
             query_str = f"What skills does {person} have ?"
             response = index.query(query_str, text_qa_template=QA_PROMPT)
             # Write answer to sheet
-            sheet[f'A{column_number+1}'] = response.response
+            sheet.cell(row=1, column=column_number+1).value = response.response
 
         for column_number, person in enumerate(list_of_people):
             # Get second answer
             query_str = f"How many years experience does {person} have ?"
             response = index.query(query_str, text_qa_template=QA_PROMPT)
             # Write answer to sheet
-            sheet[f'B{column_number+1}'] = response.response
+            sheet.cell(row=2, column=column_number+1).value = response.response
 
         for column_number, person in enumerate(list_of_people):
             # Get third  answer
             query_str = f"Is {person} a good fit for a product owner role ?"
             response = index.query(query_str, text_qa_template=QA_PROMPT)
             # Write answer to sheet
-            sheet[f'C{column_number+1}'] = response.response
+            sheet.cell(row=3, column=column_number+1).value = response.response
 
         for column_number, person in enumerate(list_of_people):
             # Get fourth  answer
             query_str = f"Will {person} thrive in an agile squad ?"
             response = index.query(query_str, text_qa_template=QA_PROMPT)
             # Write answer to sheet
-            sheet[f'D{column_number+1}'] = response.response
+            sheet.cell(row=4, column=column_number+1).value = response.response
 
         for column_number, person in enumerate(list_of_people):
             # Get fifth  answer
             query_str = f"Does {person} show an aptitude for continuous learning and tradecraft development ?"
             response = index.query(query_str, text_qa_template=QA_PROMPT)
             # Write answer to sheet
-            sheet[f'E{column_number+1}'] = response.response
+            sheet.cell(row=5, column=column_number+1).value = response.response
 
         for column_number, person in enumerate(list_of_people):
             # Get sixth  answer
             query_str = f"Will {person} be easy and approachable to others in the squad ?"
             response = index.query(query_str, text_qa_template=QA_PROMPT)
             # Write answer to sheet
-            sheet[f'F{column_number+1}'] = response.response
+            sheet.cell(row=6, column=column_number+1).value = response.response
 
         workbook.save(comparison_file_name)
         workbook.close()    
