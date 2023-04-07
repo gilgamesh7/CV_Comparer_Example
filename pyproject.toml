@@ -10,6 +10,8 @@ packages = [{include = "cv_comparer_example"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 llama-index = "^0.5.9"
+pypdf2 = "^3.0.1"
+openpyxl = "^3.1.2"
 
 
 [build-system]

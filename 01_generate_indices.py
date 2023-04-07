@@ -1,9 +1,9 @@
 import os
 from typing import List
 
-from llama_index import GPTSimpleVectorIndex, download_loader
+from llama_index import GPTSimpleVectorIndex, SimpleDirectoryReader
 
-from environment_setup import logger, list_of_cvs, data_directory
+from environment_setup import logger, data_directory, indices_directory
 
 try:
     openai_api_key = os.environ.get('OPENAI_API_KEY')
@@ -14,15 +14,10 @@ except ValueError as err:
     logger.error(f"{err}")
     exit()
 
-def get_cvs_from_linked_in()-> List:
+def generate_documents_from_pdfs()-> List:
     try:
-        logger.info("Initialise web page loader")
-        SimpleWebPageReader = download_loader("SimpleWebPageReader")
-        loader = SimpleWebPageReader()
-
-        logger.info("Generate list with all CVs from Linked In")
-
-        list_of_cv_documents = loader.load_data(urls=list_of_linked_in_cv_links)
+        logger.info("Generate documents list with all CVs from PDFs")
+        list_of_cv_documents = SimpleDirectoryReader('data').load_data()
 
         logger.info(f"Returning {len(list_of_cv_documents)} documents")
         return list_of_cv_documents
@@ -30,27 +25,28 @@ def get_cvs_from_linked_in()-> List:
         logger.error(f"{err}")
         raise err
 
-def generate_indices_for_cvs(list_of_cv_documents: List)-> object:
+def generate_index_for_cvs(list_of_cv_documents: List)-> object:
     try:
-        logger.info(f"Generating indices for {len(list_of_cv_documents)} documents")
+        logger.info(f"Generating index for {len(list_of_cv_documents)} documents")
 
-        list_of_cv_indices = []
-        for cv_document in list_of_cv_documents:
-            cv_index = GPTSimpleVectorIndex.from_documents([cv_document])
-            list_of_cv_indices.append(cv_index)
+        cv_index = GPTSimpleVectorIndex.from_documents(list_of_cv_documents)
 
+        # list_of_cv_indices = []
+        # for cv_document in list_of_cv_documents:
+        #     cv_index = GPTSimpleVectorIndex.from_documents([cv_document])
+        #     list_of_cv_indices.append(cv_index)
 
-        logger.info(f"Returning {len(list_of_cv_indices)} indices for CVs")
-        return(list_of_cv_indices)
+        logger.info(f"Returning {type(cv_index)} for CVs")
+        return(cv_index)
     except Exception as err:
         logger.error(f"{err}")
         raise err    
 
-def save_indices_to_files(list_of_cv_indices: List)-> None:
+def save_index_to_file(cv_index: object)-> None:
     try:
-        # save to disk
-        for file_suffix, cv_index in enumerate(list_of_cv_indices):
-            cv_index.save_to_disk(data_directory / f'cv_index_file_{file_suffix}.json')
+        logger.info(f"Saving index to file")
+
+        cv_index.save_to_disk(indices_directory / f'cv_index.json')
     except Exception as err:
         logger.error(f"{err}")
         raise err  
@@ -60,13 +56,13 @@ def main()-> None:
     try:
         logger.info("Starting CV Comparer using OpenAI API , phase download & index...")
 
-        list_of_cv_documents = get_cvs_from_linked_in()
-        logger.info(f"{len(list_of_cv_documents)} documents fetched from Linked In")
+        list_of_cv_documents = generate_documents_from_pdfs()
+        logger.info(f"{len(list_of_cv_documents)} documents created from PDFs")
 
-        list_of_cv_indices = generate_indices_for_cvs(list_of_cv_documents)
-        logger.info(f"{len(list_of_cv_indices)} indices generated")
+        cv_index = generate_index_for_cvs(list_of_cv_documents)
+        logger.info(f"Index generated")
 
-        save_indices_to_files(list_of_cv_indices)
+        save_index_to_file(cv_index)
 
     except Exception as err:
         logger.error(f"{err}")    

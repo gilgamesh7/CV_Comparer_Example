@@ -5,18 +5,20 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO, format="[{asctime}] - {funcName} - {lineno} - {message}", style='{')
 logger = logging.getLogger("CV-COMPARE")
 
-# List of CVs to process, downloaded from :
-# 'https://www.linkedin.com/in/rajesh-babu-7203785/',
-# 'https://www.linkedin.com/in/jason-paris-3404565/',
-# 'https://www.linkedin.com/in/jolie-hodson-she-her-8248a44a/',
-# 'https://www.linkedin.com/in/mark-aue/'
-list_of_cvs = [
-    'Jason_Paris.pdf',
-    'Jolie_Hodson.pdf',
-    'Mark_Aue.pdf',
-    'Rajesh Babu.pdf'
-]
-
-# Generate file names
+# Generate source directories
 data_directory = Path()/'data'
 data_directory.mkdir(parents=True, exist_ok=True)
+
+indices_directory = Path()/'indices'
+indices_directory.mkdir(parents=True, exist_ok=True)
+
+comparison_directory = Path()/'comparisons'
+comparison_directory.mkdir(parents=True, exist_ok=True)
+
+# List of people
+list_of_people = [
+    'Rajesh Babu',
+    'Jolie Hosdon',
+    'Mark Aue',
+    'Jason Paris'
+    ]
