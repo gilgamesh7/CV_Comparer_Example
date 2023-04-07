@@ -4,7 +4,7 @@ from typing import List
 
 from llama_index import GPTSimpleVectorIndex, download_loader
 
-from application_logger import logger
+from environment_setup import logger, list_of_linked_in_cv_links, index_file_name
 
 try:
     openai_api_key = os.environ.get('OPENAI_API_KEY')
@@ -17,24 +17,41 @@ except ValueError as err:
 
 def get_cvs_from_linked_in()-> List:
     try:
-        # Initialise web page loader
+        logger.info("Initialise web page loader")
         SimpleWebPageReader = download_loader("SimpleWebPageReader")
         loader = SimpleWebPageReader()
 
-        list_of_linked_in_cv_links = [
-            'https://www.linkedin.com/in/rajesh-babu-7203785/',
-            'https://www.linkedin.com/in/jason-paris-3404565/',
-            'https://www.linkedin.com/in/jolie-hodson-she-her-8248a44a/',
-            'https://www.linkedin.com/in/mark-aue/'
-        ]
+        logger.info("Generate list with all CVs from Linked In")
 
         list_of_cv_documents = loader.load_data(urls=list_of_linked_in_cv_links)
-        # for cv_link in list_of_linked_in_cv_links:
-        #     cv_document = loader.load_data(urls=['https://arstechnica.com/gadgets/2023/04/9-best-accessories-for-macbook-pro-and-mac-mini/'])
+
+        logger.info(f"Returning {len(list_of_cv_documents)} documents")
         return list_of_cv_documents
     except Exception as err:
         logger.error(f"{err}")
         raise err
+
+def generate_index_for_cvs(list_of_cv_documents: List)-> object:
+    try:
+        logger.info("Generating indices for {len(list_of_cv_documents)} documents")
+
+        cv_index = GPTSimpleVectorIndex.from_documents(list_of_cv_documents)
+
+        logger.info(f"Returning index for CVs")
+        return(cv_index)
+    except Exception as err:
+        logger.error(f"{err}")
+        raise err    
+
+def save_index_to_file(index: object)-> None:
+    try:
+        index_file = Path()/'data'/'index.json'
+        # save to disk
+        index.save_to_disk(index_file)
+    except Exception as err:
+        logger.error(f"{err}")
+        raise err  
+
 
 def main():
     try:
@@ -42,6 +59,11 @@ def main():
 
         list_of_cv_documents = get_cvs_from_linked_in()
         logger.info(f"{len(list_of_cv_documents)} documents fetched from Linked In")
+
+        index = generate_index_for_cvs(list_of_cv_documents)
+
+        save_index_to_file(index)
+
     except Exception as err:
         logger.error(f"{err}")    
     finally:
